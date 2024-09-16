@@ -13,9 +13,11 @@ import { useContext, useState } from "react";
 import { MnemonicsContext } from "../../contexts/MnemonicsContext";
 import { CopyIcon } from "@radix-ui/react-icons";
 import { RawMnemonicsContext } from "../../contexts/RawMnemonicsContext";
+import { SavedPhraseContext } from "../../contexts/SavedPhrase";
 
 const MnemonicsDisplay = () => {
   const { mnemonicsContextState } = useContext(MnemonicsContext);
+  const { savedPhraseContextDispatch } = useContext(SavedPhraseContext);
   const [isChecked, setIsChecked] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const copyHandler = async () => {
@@ -33,13 +35,21 @@ const MnemonicsDisplay = () => {
   const checkBoxChangeHandler = (event) => {
     setIsChecked(event.target.checked);
   };
+  const nextHandler = () => {
+    savedPhraseContextDispatch({ type: "setIsSavedPhrase", payload: true });
+  };
   return (
     <Box className="flex justify-around items-center min-h-screen">
       <Card className="max-w-xl">
         <Heading className="m-4 hover:cursor-default" align={"center"}>
           Secret recovery phrase
         </Heading>
-        <Text className="mb-6 hover:cursor-default" as="div" color="gray" align={"center"}>
+        <Text
+          className="mb-6 hover:cursor-default"
+          as="div"
+          color="gray"
+          align={"center"}
+        >
           This is the only way to recover your account if you lose your device.
           Write it down and store it in the safe place.
         </Text>
@@ -80,7 +90,9 @@ const MnemonicsDisplay = () => {
             </Flex>
           </Text>
 
-          <Button disabled={!isChecked}>Next</Button>
+          <Button onClick={nextHandler} disabled={!isChecked}>
+            Next
+          </Button>
         </Box>
       </Card>
     </Box>

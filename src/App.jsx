@@ -2,12 +2,13 @@ import { Suspense, useContext, useState } from "react";
 import "./App.css";
 import { Outlet } from "react-router-dom";
 import "@radix-ui/themes/styles.css";
-import { Badge, Flex, Heading, Theme } from "@radix-ui/themes";
+import { Badge, Box, Flex, Heading, Spinner, Theme } from "@radix-ui/themes";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { ChainProvider } from "./contexts/ChainContext";
 import * as Toast from "@radix-ui/react-toast";
 import { MnemonicsProvider } from "./contexts/MnemonicsContext";
 import { RawMnemonicsProvider } from "./contexts/RawMnemonicsContext";
+import { SavedPhraseProvider } from "./contexts/SavedPhrase";
 
 function App() {
   const [theme, setTheme] = useState(true);
@@ -18,13 +19,13 @@ function App() {
     <ChainProvider>
       <MnemonicsProvider>
         <RawMnemonicsProvider>
-          <Theme
-            appearance={theme ? "dark" : "light"}
-            accentColor="crimson"
-            grayColor="sand"
-            radius="large"
-          >
-            <Toast.Provider>
+          <SavedPhraseProvider>
+            <Theme
+              appearance={theme ? "dark" : "light"}
+              accentColor="crimson"
+              grayColor="sand"
+              radius="large"
+            >
               <Flex
                 className="absolute w-screen"
                 justify={"between"}
@@ -46,11 +47,17 @@ function App() {
                   </button>
                 </div>
               </Flex>
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense
+                fallback={
+                  <Box className="flex justify-center items-center min-h-screen">
+                    <Spinner />
+                  </Box>
+                }
+              >
                 <Outlet />
               </Suspense>
-            </Toast.Provider>
-          </Theme>
+            </Theme>
+          </SavedPhraseProvider>
         </RawMnemonicsProvider>
       </MnemonicsProvider>
     </ChainProvider>

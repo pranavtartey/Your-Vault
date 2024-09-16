@@ -13,8 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { ChainContext } from "../../contexts/ChainContext";
 
 const SelectChain = () => {
-  const { chainContextState, chainContextDispatch } = useContext(ChainContext);
-  const navigate = useNavigate();
+  const { chainContextDispatch } = useContext(ChainContext);
   const [selectedValue, setSelectedValue] = useState("");
 
   const backHandler = () => {
