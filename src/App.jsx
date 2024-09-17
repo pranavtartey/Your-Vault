@@ -1,11 +1,10 @@
-import { Suspense, useContext, useState } from "react";
+import { Suspense, useState } from "react";
 import "./App.css";
 import { Outlet } from "react-router-dom";
 import "@radix-ui/themes/styles.css";
 import { Badge, Box, Flex, Heading, Spinner, Theme } from "@radix-ui/themes";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { ChainProvider } from "./contexts/ChainContext";
-import * as Toast from "@radix-ui/react-toast";
 import { MnemonicsProvider } from "./contexts/MnemonicsContext";
 import { RawMnemonicsProvider } from "./contexts/RawMnemonicsContext";
 import { SavedPhraseProvider } from "./contexts/SavedPhrase";
