@@ -7,6 +7,8 @@ import { RawMnemonicsContext } from "../../contexts/RawMnemonicsContext";
 import MnemonicsDisplay from "../MnemonicsDisplay/MnemonicsDisplay";
 import { SavedPhraseContext } from "../../contexts/SavedPhrase";
 import SolanaAccount from "../SolanaAccount/SolanaAccount";
+import SolanaWallet from "../SolanaWallet/SolanaWallet";
+import EthWallet from "../EthWallet/EthWallet";
 import EthAccount from "../EthAccount/EthAccount";
 
 const Home = () => {
@@ -22,9 +24,9 @@ const Home = () => {
               {savedPhraseContextState ? (
                 <>
                   {chainContextState === "Solana" ? (
-                    <SolanaAccount />
+                    <SolanaWallet />
                   ) : (
-                    <EthAccount />
+                    <EthWallet />
                   )}
                 </>
               ) : (
