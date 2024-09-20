@@ -6,20 +6,27 @@ import nacl from "tweetnacl";
 import { RawMnemonicsContext } from "../../contexts/RawMnemonicsContext";
 import { Box, Button, Card, Text } from "@radix-ui/themes";
 import AccountCard from "../AccountCard/AccountCard";
+import { SelectedSolAccountContext } from "../../contexts/SelectedSolAccountContext";
+import { SolAccountsContext } from "../../contexts/SolAccountsContext";
 
 export function SolanaWallet() {
   // const connection = new Connection("https://api.devnet.solana.com");
-  const connection = new Connection(clusterApiUrl("devnet"));
+  const connection = new Connection(
+    "https://solana-devnet.g.alchemy.com/v2/CNAtFpCtGfjzf138vPcHDgRt9WFIj68s"
+  );
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [keyPairs, setKeyPairs] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const { rawMnemonicsContextState } = useContext(RawMnemonicsContext);
+  const { selectedSolAccountContextState, selectedSolAccountContextDispatch } =
+    useContext(SelectedSolAccountContext);
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const { solAccountsContextState, solAccountsContextDispatch } =
+    useContext(SolAccountsContext);
 
-  const addSolWallet = () => {
-    const seed = mnemonicToSeed(rawMnemonicsContextState);
+  const addSolWallet = async () => {
+    const seed = await mnemonicToSeed(rawMnemonicsContextState);
     const path = `m/44'/501'/${currentIndex}'/0'`;
     const derivedSeed = derivePath(path, seed.toString("hex")).key;
     const secret = nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
@@ -28,23 +35,18 @@ export function SolanaWallet() {
     const newAccount = {
       accountNumber: currentIndex + 1,
       publicKey: keypair.publicKey.toBase58(),
-      privetKey: keypair.secretKey,
+      privateKey: keypair.secretKey,
     };
-    setAccounts((prevAccounts) => [...prevAccounts, newAccount]);
-    setSelectedAccount(newAccount);
-  };
-
-  const fetchTransactions = async (publicKey) => {
-    try {
-      const pubKey = new PublicKey(publicKey);
-      const signatures = await connection.getSignaturesForAddress(pubKey);
-      setTransactions(signatures);
-    } catch (error) {
-      console.log(
-        "Something went wrong while fetching the tracnsactions : ",
-        error
-      );
-    }
+    // setAccounts((prevAccounts) => [...prevAccounts, newAccount]);
+    solAccountsContextDispatch({
+      type: "setSolAccounts",
+      payload: newAccount,
+    });
+    selectedSolAccountContextDispatch({
+      type: "setSelectedSolAccount",
+      payload: newAccount,
+    });
+    console.log("This is your accounts array", solAccountsContextState);
   };
 
   useEffect(() => {
@@ -54,10 +56,6 @@ export function SolanaWallet() {
   const addSolWalletHandler = () => {
     addSolWallet();
   };
-
-  useEffect(() => {
-    fetchTransactions(selectedAccount?.publicKey);
-  }, [selectedAccount]);
 
   return (
     <Box className="flex">
@@ -72,7 +70,7 @@ export function SolanaWallet() {
             <div>{p.toBase58()}</div>
           ))}
         </Card> */}
-        <AccountCard account={selectedAccount} transactions={transactions} />
+        <AccountCard />
       </Box>
     </Box>
   );
