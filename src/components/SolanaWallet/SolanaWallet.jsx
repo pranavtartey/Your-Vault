@@ -63,6 +63,22 @@ export function SolanaWallet() {
   return (
     <Box className="flex">
       <Box className="flex flex-col justify-end min-h-screen w-1/6 bg-zinc-900">
+        <ul>
+          {allAccounts?.map((account) => (
+            <li
+              className="hover:text-rose-600 hover:cursor-pointer text-center"
+              onClick={() => {
+                selectedSolAccountContextDispatch({
+                  type: "setSelectedSolAccount",
+                  payload: account,
+                });
+              }}
+              key={account.accountNumber}
+            >
+              Account {account.accountNumber}
+            </li>
+          ))}
+        </ul>
         <Button className="w-full" onClick={addSolWalletHandler}>
           Add Wallet
         </Button>
