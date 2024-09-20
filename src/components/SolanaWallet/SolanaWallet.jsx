@@ -16,7 +16,7 @@ export function SolanaWallet() {
   );
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [accounts, setAccounts] = useState([]);
+  const [allAccounts, setAllAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const { rawMnemonicsContextState } = useContext(RawMnemonicsContext);
   const { selectedSolAccountContextState, selectedSolAccountContextDispatch } =
@@ -37,21 +37,24 @@ export function SolanaWallet() {
       publicKey: keypair.publicKey.toBase58(),
       privateKey: keypair.secretKey,
     };
-    // setAccounts((prevAccounts) => [...prevAccounts, newAccount]);
-    solAccountsContextDispatch({
-      type: "setSolAccounts",
-      payload: newAccount,
-    });
+    setAllAccounts([...allAccounts, newAccount]);
+    // solAccountsContextDispatch({
+    //   type: "setSolAccounts",
+    //   payload: newAccount,
+    // });
     selectedSolAccountContextDispatch({
       type: "setSelectedSolAccount",
       payload: newAccount,
     });
-    console.log("This is your accounts array", solAccountsContextState);
   };
 
   useEffect(() => {
     addSolWallet();
   }, []);
+
+  useEffect(() => {
+    console.log("This is your accounts array", allAccounts);
+  }, [allAccounts]);
 
   const addSolWalletHandler = () => {
     addSolWallet();
