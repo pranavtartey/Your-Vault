@@ -1,3 +1,4 @@
+import bs58 from "bs58";
 import { CopyIcon, EyeNoneIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import {
   Badge,
@@ -11,12 +12,16 @@ import {
   IconButton,
   Tabs,
   Text,
+  TextField,
 } from "@radix-ui/themes";
 import {
   clusterApiUrl,
   Connection,
+  Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
+  SystemProgram,
+  Transaction,
 } from "@solana/web3.js";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -29,6 +34,10 @@ const AccountCard = () => {
   const [isAirdropping, setIsAirdropping] = useState(false);
   const [airdropMessage, setAirdropMessage] = useState("");
   const [transactions, setTransactions] = useState([]);
+  const [transferRecipient, setTransferRecipient] = useState("");
+  const [transferAmount, setTransferAmount] = useState("");
+  const [isTransferring, setIsTransferring] = useState(false);
+  const [transferMessage, setTransferMessage] = useState("");
   const [balance, setBalance] = useState(null);
   const togglePrivateKeyVisibility = () => {
     setIsShowPrivateKey(!isShowPrivateKey);
@@ -113,6 +122,67 @@ const AccountCard = () => {
     fetchTransactions(selectedSolAccountContextState?.publicKey);
   }, [selectedSolAccountContextState]);
 
+  const transferSol = async () => {
+    if (!transferRecipient || !transferAmount || transferAmount <= 0) {
+      setTransferMessage("Invalid recipient or amount.");
+      return;
+    }
+  
+    setIsTransferring(true);
+    setTransferMessage("Initiating Transfer...");
+  
+    try {
+      // Decode the base58 private key to Uint8Array
+      const decodedPrivateKey = bs58.decode(selectedSolAccountContextState?.privateKey);
+  
+      // Generate the sender's Keypair from the decoded private key
+      const senderKeypair = Keypair.fromSecretKey(decodedPrivateKey);
+  
+      // Create the recipient PublicKey object
+      const recipientPubkey = new PublicKey(transferRecipient);
+  
+      // Create a transaction to transfer SOL
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: senderKeypair.publicKey,
+          toPubkey: recipientPubkey,
+          lamports: transferAmount * LAMPORTS_PER_SOL, // Convert SOL to lamports
+        })
+      );
+  
+      // Send the transaction
+      const signature = await connection.sendTransaction(transaction, [senderKeypair], {
+        skipPreflight: false,
+        preflightCommitment: "confirmed",
+      });
+  
+      // Confirm the transaction
+      await connection.confirmTransaction(signature, "confirmed");
+  
+      setTransferMessage(`Transfer successful! Signature: ${signature}`);
+  
+      // Fetch updated balance after transfer
+      fetchBalance();
+    } catch (error) {
+      console.error("Transfer failed:", error);
+      setTransferMessage("Transfer failed. Please check the details and try again.");
+    } finally {
+      setIsTransferring(false);
+    }
+  };
+
+  // const handleSolTranfer = () => {
+  //   console.log("Recipient Publi Key : ", transferRecipient);
+  //   console.log("Amount to transfer : ", transferAmount);
+  //   if (!transferRecipient || !transferAmount || transferAmount <= 0) {
+  //     setTransferMessage("Invalid recipient or amount.");
+  //     return;
+  //   }
+  //   setIsTransferring(true);
+  //   setTransferMessage("Initiating Transfer...");
+    
+  // };
+
   return (
     <Card className="max-w-xl">
       <Tabs.Root defaultValue="account">
@@ -180,7 +250,28 @@ const AccountCard = () => {
             </DataList.Root>
           </Tabs.Content>
           <Tabs.Content value="transfer">
-            <Text size="2">Access and update your documents.</Text>
+            <Box>
+              <TextField.Root
+                className="mb-3.5"
+                placeholder="Recipient Public Key..."
+                value={transferRecipient}
+                onChange={(e) => setTransferRecipient(e.target.value)}
+              />
+              <TextField.Root
+                className="mb-3.5"
+                type="number"
+                value={transferAmount}
+                onChange={(e) => setTransferAmount(e.target.value)}
+                placeholder="Amount (SOL)"
+              />
+              <Button
+                disabled={!transferRecipient || !transferAmount}
+                onClick={transferSol}
+              >
+                Transfer
+              </Button>
+              <Text>{transferMessage}</Text>
+            </Box>
           </Tabs.Content>
 
           <Tabs.Content value="airdrop">

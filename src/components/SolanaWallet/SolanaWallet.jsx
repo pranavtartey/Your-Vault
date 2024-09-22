@@ -1,3 +1,4 @@
+import bs58 from "bs58";
 import { useContext, useEffect, useState } from "react";
 import { mnemonicToSeed } from "bip39";
 import { derivePath } from "ed25519-hd-key";
@@ -35,8 +36,9 @@ export function SolanaWallet() {
     const newAccount = {
       accountNumber: currentIndex + 1,
       publicKey: keypair.publicKey.toBase58(),
-      privateKey: keypair.secretKey,
+      privateKey: bs58.encode(keypair.secretKey),
     };
+    // console.log(newAccount);
     setAllAccounts([...allAccounts, newAccount]);
     // solAccountsContextDispatch({
     //   type: "setSolAccounts",
