@@ -46,12 +46,12 @@ const SelectChain = () => {
                 <Text color="gray">I'd go with Solana</Text>
               </Flex>
             </RadioCards.Item>
-            <RadioCards.Item value="Ethereum">
+            {/* <RadioCards.Item value="Ethereum">
               <Flex direction="column" width="100%">
                 <Text weight="bold">Ethereum</Text>
                 <Text color="gray">Everybody say E-th!!</Text>
               </Flex>
-            </RadioCards.Item>
+            </RadioCards.Item> */}
           </RadioCards.Root>
         </Box>
         <div className="flex justify-center items-center">
