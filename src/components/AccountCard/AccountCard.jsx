@@ -127,45 +127,49 @@ const AccountCard = () => {
       setTransferMessage("Invalid recipient or amount.");
       return;
     }
-  
+
     setIsTransferring(true);
     setTransferMessage("Initiating Transfer...");
-  
+
     try {
-      // Decode the base58 private key to Uint8Array
-      const decodedPrivateKey = bs58.decode(selectedSolAccountContextState?.privateKey);
-  
-      // Generate the sender's Keypair from the decoded private key
+      const decodedPrivateKey = bs58.decode(
+        selectedSolAccountContextState?.privateKey
+      );
+
       const senderKeypair = Keypair.fromSecretKey(decodedPrivateKey);
-  
-      // Create the recipient PublicKey object
+
       const recipientPubkey = new PublicKey(transferRecipient);
-  
-      // Create a transaction to transfer SOL
+
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: senderKeypair.publicKey,
           toPubkey: recipientPubkey,
-          lamports: transferAmount * LAMPORTS_PER_SOL, // Convert SOL to lamports
+          lamports: transferAmount * LAMPORTS_PER_SOL,
         })
       );
-  
-      // Send the transaction
-      const signature = await connection.sendTransaction(transaction, [senderKeypair], {
-        skipPreflight: false,
-        preflightCommitment: "confirmed",
-      });
-  
+
+      const signature = await connection.sendTransaction(
+        transaction,
+        [senderKeypair],
+        {
+          skipPreflight: false,
+          preflightCommitment: "confirmed",
+        }
+      );
+
       // Confirm the transaction
-      await connection.confirmTransaction(signature, "confirmed");
-  
+      // await connection.confirmTransaction(signature, "confirmed");
+
       setTransferMessage(`Transfer successful! Signature: ${signature}`);
-  
+      console.log("Your transfer was successful");
+
       // Fetch updated balance after transfer
       fetchBalance();
     } catch (error) {
       console.error("Transfer failed:", error);
-      setTransferMessage("Transfer failed. Please check the details and try again.");
+      setTransferMessage(
+        "Transfer failed. Please check the details and try again."
+      );
     } finally {
       setIsTransferring(false);
     }
@@ -180,7 +184,7 @@ const AccountCard = () => {
   //   }
   //   setIsTransferring(true);
   //   setTransferMessage("Initiating Transfer...");
-    
+
   // };
 
   return (
