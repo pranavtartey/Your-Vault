@@ -30,7 +30,10 @@ function App() {
                   radius="large"
                 >
                   <Flex
-                    className="absolute w-screen"
+                    as="div"
+                    className={`absolute w-screen ${
+                      theme ? "bg-zinc-800" : "bg-amber-50"
+                    }`}
                     justify={"between"}
                     align={"center"}
                   >
