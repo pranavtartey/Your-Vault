@@ -64,7 +64,7 @@ export function SolanaWallet() {
 
   return (
     <Box className="flex">
-      <Box className="flex flex-col justify-end min-h-screen w-1/6 bg-zinc-900">
+      <Box className="flex flex-col justify-end min-h-screen w-1/6">
         <ul>
           {allAccounts?.map((account) => (
             <li
